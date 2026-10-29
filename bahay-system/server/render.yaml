@@ -1,0 +1,44 @@
+# Render Blueprint — connect the repository and Render reads this file instead
+# of asking for every field by hand.
+#
+# MONGODB_URI, JWT_SECRET and the SMTP settings are marked sync: false, so
+# Render prompts for them on first deploy rather than storing secrets in git.
+services:
+  - type: web
+    name: bahay-pagibig-api
+    runtime: node
+    plan: free
+    rootDir: server
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
+
+      # --- required, entered at deploy time ---
+      - key: MONGODB_URI
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+
+      # --- set this to your Vercel URL once the frontend is deployed ---
+      - key: CLIENT_ORIGIN
+        sync: false
+
+      # --- email: leave SMTP_PASS empty and mail is logged, not sent ---
+      - key: SMTP_HOST
+        value: smtp.gmail.com
+      - key: SMTP_PORT
+        value: "587"
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASS
+        sync: false
+      - key: MAIL_FROM
+        value: Bahay Pag-ibig <bahaypagibig1988@gmail.com>
+
+      - key: JWT_EXPIRES_IN
+        value: 8h
+      - key: CERTIFICATE_MIN_HOURS
+        value: "20"
